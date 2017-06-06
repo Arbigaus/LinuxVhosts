@@ -24,12 +24,12 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     $virtual_host = '
     <VirtualHost *:80>
-      ServerName '.$host_criado.'.com.br
-      ServerAlias www.'.$host_criado.'.com.br
-      DocumentRoot "'.PASTA_SERVIDOR.$host_criado.'.com.br"
+      ServerName '.$host_criado.'.pc
+      ServerAlias www.'.$host_criado.'.pc
+      DocumentRoot "'.PASTA_SERVIDOR.$host_criado.'"
       ErrorLog ${APACHE_LOG_DIR}/error.log
       CustomLog "${APACHE_LOG_DIR}/access.log" common
-      <Directory "'.PASTA_SERVIDOR.$host_criado.'.com.br">
+      <Directory "'.PASTA_SERVIDOR.$host_criado.'">
         DirectoryIndex index.php index.html index.htm
         AllowOverride All
         Order allow,deny
@@ -39,7 +39,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     $pula_linha ="\r\n";
 
-    $caminho_vhosts = PASTA_APACHE.$host_criado."-com-br.conf";
+    $caminho_vhosts = PASTA_APACHE.$host_criado."-pc.conf";
 
     try {
       // CRIA O ARQUIVO DO VIRTUAL HOST NA PASTA DO APACHE
@@ -56,17 +56,17 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $pula_linha);
 
-      $local_host_of_www = "127.0.0.1   ".$host_criado.".com.br";
+      $local_host_of_www = "127.0.0.1   ".$host_criado.".pc";
 
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $local_host_of_www);
-      fclose($file); 
+      fclose($file);
 
       // CRIA O ENDEREÇO COM O WWW NO ARQUIVO HOSTS
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $pula_linha);
 
-      $local_host_on_www = "127.0.0.1   www.".$host_criado.".com.br";
+      $local_host_on_www = "127.0.0.1   www.".$host_criado.".pc";
 
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $local_host_on_www);
@@ -77,7 +77,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     try {
       // CRIA A PASTA DO PROJETO NO DIRETORIO WWW
-      mkdir(PASTA_SERVIDOR.$host_criado.".com.br", 0775);
+      mkdir(PASTA_SERVIDOR.$host_criado, 0775);
     } catch (Exception $e) {
       $_SESSION['msg'] = "Erro ao criar a pasta do projeto";
     }
@@ -102,7 +102,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
       </body>
       </html>';
 
-      $dir_projeto = PASTA_SERVIDOR.$host_criado.".com.br/index.php";
+      $dir_projeto = PASTA_SERVIDOR.$host_criado."/index.php";
       $file = fopen($dir_projeto,'a');
       fwrite($file, $index);
       fclose($file);
@@ -111,15 +111,25 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
       $_SESSION['msg'] = "Erro ao criar index.php na pasta do projeto";
     }
 
-    $shell_vhost = 'sudo a2ensite '.$host_criado.'-com-br.conf';
+    try{
+
+    $shell_vhost = 'sudo a2ensite '.$host_criado.'-pc.conf';
+    $shell_chown = 'sudo chown -R www-data:developers /var/www/'.$host_criado;
+    $shell_chmod = 'sudo chmod 775 /var/www/'.$host_criado;
 
     shell_exec($shell_vhost);
     shell_exec('sudo service apache2 reload');
+    shell_exec($shell_chown);
+    shell_exec($shell_chmod);
+
+    }catch (Exception $e) {
+      $_SESSION['msg'] = "Erro ao criar ativar o host e dar permissões à pasta.";
+    }
 
 
     $_SESSION['msg'] = "<p>Virtual Host criado com sucesso!</p>
     <p>Já está disponível no link:</p>
-    <p><a href='http://".$host_criado.".com.br' title='Meu novo host!' target='_blank'>".$host_criado.".com.br</a></p>";
+    <p><a href='http://".$host_criado.".pc' title='Meu novo host!' target='_blank'>".$host_criado.".pc</a></p>";
     header("Location: index.php");
   else:
     $_SESSION['msg'] = "É necessário preencher o campo acima!";
