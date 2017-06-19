@@ -1,4 +1,4 @@
-Script desenvolvido pelo Luciano Chaves para criação de Virtual Hosts no Windows e adaptado para Linux.
+Script desenvolvido pelo Luciano Charles para criação de Virtual Hosts no Windows e adaptado para Linux.
 
 Como funciona:
 
