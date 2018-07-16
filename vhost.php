@@ -115,7 +115,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     $shell_vhost = 'sudo a2ensite '.$host_criado.'-pc.conf';
     $shell_chown = 'sudo chown -R www-data:developers /var/www/'.$host_criado;
-    $shell_chmod = 'sudo chmod 775 /var/www/'.$host_criado;
+    $shell_chmod = 'sudo chmod 775 -R /var/www/'.$host_criado;
 
     shell_exec($shell_vhost);
     shell_exec('sudo service apache2 reload');
