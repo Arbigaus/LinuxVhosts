@@ -9,7 +9,11 @@ Como funciona:
 	- /var/www/
 	- /etc/hosts
 
+	* Você pode deixar o grupo www-data como dono das pastas: 
+		- sudo chown -R :www-data *folder* ou *arquivo*
+
 	* Adicione teu usuário padrão no grupo :www-data ( sudo usermod -aG www-data username )
+
 3 - Para que ativação do novo Virtual Host funcione corretamente, é necessário dar permissão para que o usuário www-data possa utilizar o comando sudo sem necessidade de senha.
 	- Para remover a solicitação de senha do usuário no comando sudo, insira a linha abaixo no arquivo /etc/sudoers:
 
