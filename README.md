@@ -5,9 +5,13 @@ Como funciona:
 1 - Funciona através do browser, utilizando o próprio PHP para criação dos Virtuais Hosts.
 
 2 - Para o funcionamento correto, o usuário e grupo www-data necessita de permissão de escrita nas pastas e documentos abaixo:
+	
 	- /etc/apache2/sites-available
+	 
 	- /etc/apache2/sites-enabled
+	 
 	- /var/www/
+
 	- /etc/hosts
 
 	* Você pode deixar o grupo www-data como dono das pastas: 
