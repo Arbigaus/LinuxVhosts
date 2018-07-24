@@ -19,6 +19,11 @@ endif;
 		<div class="form">
 			<form method="POST" action="vhost.php" class="login-form">
 				<input type="text" name="virtual_host" placeholder="Digite o nome do Virtual Host"/>
+				<select name="dominio" >
+					<option value=".pc">.pc</option>
+					<option value=".local">.local</option>
+					option
+				</select>
 				<button type="submit">Criar Virtual Host</button>
 			</form>
 		</div>

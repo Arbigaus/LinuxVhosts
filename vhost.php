@@ -8,7 +8,9 @@ define("PASTA_APACHE", '/etc/apache2/sites-available/');
 define("ARQUIVO_HOST", '/etc/hosts');
 
 $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
-if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
+  if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
+    $dominio = $dados_form['dominio'];
+    $file_name = str_replace('.','-',$dominio).'.conf';
 
     $dados_form['virtual_host'] = trim(strtolower(strip_tags(str_replace(' ','_',$dados_form['virtual_host']))));
 
@@ -21,11 +23,12 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
     $host_criado = str_replace('.edu','',$host_criado);
     $host_criado = str_replace('.gov','',$host_criado);
     $host_criado = str_replace('.pc','',$host_criado);
+    $host_criado = str_replace('.local','',$host_criado);
 
     $virtual_host = '
     <VirtualHost *:80>
-      ServerName '.$host_criado.'.pc
-      ServerAlias www.'.$host_criado.'.pc
+      ServerName '.$host_criado.$dominio.'
+      ServerAlias www.'.$host_criado.$dominio.'
       DocumentRoot "'.PASTA_SERVIDOR.$host_criado.'"
       ErrorLog ${APACHE_LOG_DIR}/error.log
       CustomLog "${APACHE_LOG_DIR}/access.log" common
@@ -39,7 +42,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     $pula_linha ="\r\n";
 
-    $caminho_vhosts = PASTA_APACHE.$host_criado."-pc.conf";
+    $caminho_vhosts = PASTA_APACHE.$host_criado.$file_name;
 
     try {
       // CRIA O ARQUIVO DO VIRTUAL HOST NA PASTA DO APACHE
@@ -56,7 +59,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $pula_linha);
 
-      $local_host_of_www = "127.0.0.1   ".$host_criado.".pc";
+      $local_host_of_www = "127.0.0.1   ".$host_criado.$dominio;
 
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $local_host_of_www);
@@ -66,7 +69,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $pula_linha);
 
-      $local_host_on_www = "127.0.0.1   www.".$host_criado.".pc";
+      $local_host_on_www = "127.0.0.1   www.".$host_criado.$dominio;
 
       $file = fopen($caminho_localhosts,'a');
       fwrite($file, $local_host_on_www);
@@ -113,7 +116,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     try{
 
-    $shell_vhost = 'sudo a2ensite '.$host_criado.'-pc.conf';
+    $shell_vhost = 'sudo a2ensite '.$host_criado.$file_name;
     $shell_chown = 'sudo chown -R www-data:www-data /var/www/'.$host_criado;
     $shell_chmod = 'sudo chmod 775 -R /var/www/'.$host_criado;
 
@@ -129,7 +132,7 @@ if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
 
     $_SESSION['msg'] = "<p>Virtual Host criado com sucesso!</p>
     <p>Já está disponível no link:</p>
-    <p><a href='http://".$host_criado.".pc' title='Meu novo host!' target='_blank'>".$host_criado.".pc</a></p>";
+    <p><a href='http://".$host_criado.$dominio."' title='Meu novo host!' target='_blank'>".$host_criado.$dominio."</a></p>";
     header("Location: index.php");
   else:
     $_SESSION['msg'] = "É necessário preencher o campo acima!";
