@@ -10,6 +10,7 @@ define("ARQUIVO_HOST", '/etc/hosts');
 $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
   if(isset($dados_form['virtual_host']) && !empty($dados_form['virtual_host'])):
     $dominio = $dados_form['dominio'];
+    $folder_name = str_replace('.','-',$dominio);
     $file_name = str_replace('.','-',$dominio).'.conf';
 
     $dados_form['virtual_host'] = trim(strtolower(strip_tags(str_replace(' ','_',$dados_form['virtual_host']))));
@@ -29,10 +30,10 @@ $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
     <VirtualHost *:80>
       ServerName '.$host_criado.$dominio.'
       ServerAlias www.'.$host_criado.$dominio.'
-      DocumentRoot "'.PASTA_SERVIDOR.$host_criado.'"
+      DocumentRoot "'.PASTA_SERVIDOR.$host_criado.$folder_name.'"
       ErrorLog ${APACHE_LOG_DIR}/error.log
       CustomLog "${APACHE_LOG_DIR}/access.log" common
-      <Directory "'.PASTA_SERVIDOR.$host_criado.'">
+      <Directory "'.PASTA_SERVIDOR.$host_criado.$folder_name.'">
         DirectoryIndex index.php index.html index.htm
         AllowOverride All
         Order allow,deny
@@ -80,7 +81,7 @@ $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
 
     try {
       // CRIA A PASTA DO PROJETO NO DIRETORIO WWW
-      mkdir(PASTA_SERVIDOR.$host_criado, 0775);
+      mkdir(PASTA_SERVIDOR.$host_criado.$folder_name, 0775);
     } catch (Exception $e) {
       $_SESSION['msg'] = "Erro ao criar a pasta do projeto";
     }
@@ -105,7 +106,7 @@ $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
       </body>
       </html>';
 
-      $dir_projeto = PASTA_SERVIDOR.$host_criado."/index.php";
+      $dir_projeto = PASTA_SERVIDOR.$host_criado.$folder_name."/index.php";
       $file = fopen($dir_projeto,'a');
       fwrite($file, $index);
       fclose($file);
@@ -117,8 +118,8 @@ $dados_form = filter_input_array(INPUT_POST,FILTER_SANITIZE_MAGIC_QUOTES);
     try{
 
     $shell_vhost = 'sudo a2ensite '.$host_criado.$file_name;
-    $shell_chown = 'sudo chown -R www-data:www-data /var/www/'.$host_criado;
-    $shell_chmod = 'sudo chmod 775 -R /var/www/'.$host_criado;
+    $shell_chown = 'sudo chown -R www-data:www-data /var/www/'.$host_criado.$folder_name;
+    $shell_chmod = 'sudo chmod 775 -R /var/www/'.$host_criado.$folder_name;
 
     shell_exec($shell_vhost);
     shell_exec('sudo service apache2 reload');
